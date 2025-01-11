@@ -7,7 +7,7 @@ import { CoinCard } from "@/components/Coin-card"
 interface Coin {
   name: string
   symbol: string
-  price: string
+  price: number
   change: number
   icon: string
   chartData: { value: number }[]
@@ -31,7 +31,7 @@ export default function YouMayAlsoLike() {
         const coins = data.coins.map((coin: any) => ({
           name: coin.item.name,
           symbol: coin.item.symbol,
-          price: coin.item.data?.price || "$0.00",
+          price: Number(coin.item.data?.price?.replace('$', '') || '0'),
           change: coin.item.data?.price_change_percentage_24h?.usd || 0,
           icon: coin.item.thumb,
           chartData: Array.from({ length: 20 }, () => ({ value: Math.random() * 100 })),
@@ -39,9 +39,9 @@ export default function YouMayAlsoLike() {
 
         setTrendingCoins(coins)
         setLoading(false)
-      } catch (err: any) {
-        setError(err.message)
-        setLoading(false)
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+        setLoading(false);
       }
     }
 

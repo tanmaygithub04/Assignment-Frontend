@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, memo } from 'react';
 
 function TradingViewWidget() {
-  const container = useRef();
-  const scriptRef = useRef(null); // Track the script element
+  const container = useRef<HTMLDivElement>(null);
+  const scriptRef = useRef<HTMLScriptElement | null>(null);
 
   useEffect(() => {
     // Check if the script has already been added
@@ -31,8 +31,10 @@ function TradingViewWidget() {
         "support_host": "https://www.tradingview.com"
       }`;
 
-    container.current.appendChild(script);
-    scriptRef.current = script; // Set the script reference
+    if (container.current) {
+      container.current.appendChild(script);
+      scriptRef.current = script;
+    }
 
     // Cleanup function to remove the script when the component unmounts
     return () => {

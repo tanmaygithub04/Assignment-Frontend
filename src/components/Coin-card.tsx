@@ -47,3 +47,5 @@ export function CoinCard({ name, symbol, price, change, chartData, icon }: CoinC
     </div>
   )
 }
+
+export default CoinCard;
