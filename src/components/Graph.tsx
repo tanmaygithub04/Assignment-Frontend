@@ -3,8 +3,16 @@
 import { useEffect, useState } from 'react';
 import TradingViewWidget from './TradingViewWidget'; 
 
+interface PriceData {
+  bitcoin: {
+    usd: number;
+    inr: number;
+    usd_24h_change: number;
+  }
+}
+
 const Graph = () => {
-  const [priceData, setPriceData] = useState(null);
+  const [priceData, setPriceData] = useState<PriceData['bitcoin'] | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Fetch the Bitcoin price data from Coingecko API using fetch
@@ -12,7 +20,7 @@ const Graph = () => {
     const fetchPriceData = async () => {
       try {
         const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd,inr&include_24hr_change=true');
-        const data = await response.json();
+        const data: PriceData = await response.json();
         setPriceData(data.bitcoin);
         setLoading(false);
       } catch (error) {
@@ -47,13 +55,16 @@ const Graph = () => {
       {/* Price Section */}
       <div className="mb-8">
         <div className="flex items-baseline gap-4">
-          <h2 className="text-3xl font-bold">${Number(priceData?.usd).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h2>
-          <span className={`px-2 py-1 rounded-md text-sm ${priceData?.usd_24h_change > 0 ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
-            {priceData?.usd_24h_change > 0 ? '▲' : '▼'} {Math.abs(priceData?.usd_24h_change).toFixed(2)}% 
-          </span> <span className='text-gray-500'>(24H)</span> 
+          <h2 className="text-3xl font-bold">
+            ${priceData?.usd ? Number(priceData.usd).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
+          </h2>
+          <span className={`px-2 py-1 rounded-md text-sm ${priceData?.usd_24h_change && priceData.usd_24h_change > 0 ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
+            {priceData?.usd_24h_change && (priceData.usd_24h_change > 0 ? '▲' : '▼')} {priceData?.usd_24h_change ? Math.abs(priceData.usd_24h_change).toFixed(2) : '0.00'}% 
+          </span>
+          <span className='text-gray-500'>(24H)</span> 
         </div>
         <p className="text-gray-600 mt-1">
-          ₹ {Number(priceData?.inr).toLocaleString('en-IN')}
+          ₹ {priceData?.inr ? Number(priceData.inr).toLocaleString('en-IN') : '0.00'}
         </p>
       </div>
 
